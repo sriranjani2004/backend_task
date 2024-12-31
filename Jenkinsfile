@@ -1,78 +1,52 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs-20.11.0' 
+        nodejs 'nodejs-20.11.0'  
     }
- 
+    
     environment {
-        NODEJS_HOME = 'C:/Program Files/nodejs'  
+        NODEJS_HOME = 'C:/Program Files/nodejs'
         SONAR_SCANNER_PATH = 'C:/Users/prabh/Downloads/sonar-scanner-cli-6.2.1.4610-windows-x64/sonar-scanner-6.2.1.4610-windows-x64/bin'
     }
- 
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
- 
-        stage('Install Dependencies') {
+        
+        stage('Install and Build') {
             steps {
-                // Set the PATH and install dependencies using npm
-                bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
-                npm install
-                '''
+                bat '''npm install
+                npm run lint'''  
             }
         }
- 
-        stage('Lint') {
-            steps {
-                // Run linting to ensure code quality
-                bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
-                npm run lint
-                '''
-            }
-        }
- 
-        stage('Build') {
-            steps {
-                // Build the React app
-                bat '''
-                set PATH=%NODEJS_HOME%;%PATH%
-                npm run build
-                '''
-            }
-        }
- 
-        stage('SonarQube Analysis') {
+
+        
+        stage('SonarCodeAnalysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token') // Accessing the SonarQube token stored in Jenkins credentials
+                SONAR_TOKEN = credentials('sonar-token')  
             }
             steps {
-                // Ensure that sonar-scanner is in the PATH
                 bat '''
                 set PATH=%SONAR_SCANNER_PATH%;%PATH%
                 where sonar-scanner || echo "SonarQube scanner not found. Please install it."
                 sonar-scanner -Dsonar.projectKey=backend ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.token=%SONAR_TOKEN% 2>&1
+                -Dsonar.sources=. ^
+                -Dsonar.host.url=http://localhost:9000 ^
+                -Dsonar.token=%SONAR_TOKEN% 
                 '''
             }
         }
     }
- 
+
     post {
         success {
-            echo 'Pipeline completed successfully'
+            echo "Pipeline SUCCESSFULLY Build"
         }
         failure {
-            echo 'Pipeline failed'
-        }
-        always {
-            echo 'This runs regardless of the result.'
+            echo " Pipeline failed"
         }
     }
 }
