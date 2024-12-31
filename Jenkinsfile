@@ -1,12 +1,12 @@
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs-20.11.0'  
+        nodejs 'NodeJS'  
     }
     
     environment {
-        NODEJS_HOME = 'C:/Program Files/nodejs'
-        SONAR_SCANNER_PATH = 'C:/Users/prabh/Downloads/sonar-scanner-cli-6.2.1.4610-windows-x64/sonar-scanner-6.2.1.4610-windows-x64/bin'
+        NODEJS_HOME = '/usr/local/bin/node'
+        SONAR_SCANNER_PATH = '/Users/ariv/Downloads/sonar-scanner-6.2.1.4610-macosx-x64/bin/sonar-scanner'
     }
 
     stages {
@@ -18,7 +18,7 @@ pipeline {
         
         stage('Install and Build') {
             steps {
-                bat '''npm install
+                sh '''npm install
                 npm run lint'''  
             }
         }
@@ -29,13 +29,13 @@ pipeline {
                 SONAR_TOKEN = credentials('sonar-token')  
             }
             steps {
-                bat '''
-                set PATH=%SONAR_SCANNER_PATH%;%PATH%
-                where sonar-scanner || echo "SonarQube scanner not found. Please install it."
-                sonar-scanner -Dsonar.projectKey=backend ^
-                -Dsonar.sources=. ^
-                -Dsonar.host.url=http://localhost:9000 ^
-                -Dsonar.token=%SONAR_TOKEN% 
+                sh '''
+                export PATH=$SONAR_SCANNER_PATH:$PATH
+                which sonar-scanner || echo "SonarQube scanner not found. Please install it."
+                sonar-scanner -Dsonar.projectKey=newprojectbackend \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=http://localhost:9000 \
+                -Dsonar.token=$SONAR_TOKEN
                 '''
             }
         }
@@ -46,7 +46,7 @@ pipeline {
             echo "Pipeline SUCCESSFULLY Build"
         }
         failure {
-            echo " Pipeline failed"
+            echo "Pipeline failed"
         }
     }
 }
