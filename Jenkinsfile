@@ -36,7 +36,7 @@ pipeline {
                     -Dsonar.projectKey=newtoken \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=http://localhost:9000 \
-                    -Dsonar.token=$SONAR_TOKEN
+                    
                 '''
             }
         }
