@@ -7,7 +7,7 @@ pipeline {
     
     environment {
         NODEJS_HOME = '/usr/local/bin/node'
-        PATH = "$NODEJS_HOME:$PATH:/Users/ariv/Downloads/sonar-scanner-6.2.1.4610-macosx-x64/bin/"
+        PATH = "$NODEJS_HOME:$PATH:/usr/local/sonar-scanner/bin/sonar-scanner"
     }
 
     stages {
