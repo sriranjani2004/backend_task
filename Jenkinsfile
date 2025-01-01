@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         NODEJS_HOME = '/usr/local/bin/node'
-        PATH = "$NODEJS_HOME:$PATH:/usr/local/sonar-scanner/bin/sonar-scanner"
+        PATH = "$NODEJS_HOME:$PATH:/usr/local/sonar-scanner/bin"
     }
 
     stages {
@@ -35,8 +35,7 @@ pipeline {
                     sonar-scanner \
                     -Dsonar.projectKey=newtoken \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://localhost:9000 \
-                    
+                    -Dsonar.host.url=http://localhost:9000
                 '''
             }
         }
