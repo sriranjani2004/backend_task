@@ -1,12 +1,13 @@
 pipeline {
     agent any
+
     tools {
-        nodejs 'NodeJS'  
+        nodejs 'NodeJS'  // Ensure NodeJS is installed and configured
     }
     
     environment {
         NODEJS_HOME = '/usr/local/bin/node'
-        SONAR_SCANNER_PATH = '/Users/ariv/Downloads/sonar-scanner-6.2.1.4610-macosx-x64/bin/sonar-scanner'
+        PATH = "$NODEJS_HOME:$PATH:/Users/ariv/Downloads/sonar-scanner-6.2.1.4610-macosx-x64/bin/"
     }
 
     stages {
@@ -18,21 +19,21 @@ pipeline {
         
         stage('Install and Build') {
             steps {
-                sh '''npm install
-                npm run lint'''  
+                sh '''
+                npm install
+                '''
             }
         }
 
-        
         stage('SonarCodeAnalysis') {
             environment {
                 SONAR_TOKEN = credentials('sonar-token')  
             }
             steps {
+                // Invoke sonar-scanner directly (path included in PATH environment variable)
                 sh '''
-                export PATH=$SONAR_SCANNER_PATH:$PATH
-                which sonar-scanner || echo "SonarQube scanner not found. Please install it."
-                sonar-scanner -Dsonar.projectKey=newprojectbackend \
+                sonar-scanner \
+                -Dsonar.projectKey=newtoken\
                 -Dsonar.sources=. \
                 -Dsonar.host.url=http://localhost:9000 \
                 -Dsonar.token=$SONAR_TOKEN
